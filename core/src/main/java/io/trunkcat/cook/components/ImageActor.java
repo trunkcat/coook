@@ -8,12 +8,10 @@ import io.trunkcat.cook.enums.ItemID;
 
 public class ImageActor extends Image {
     final ItemID itemId;
-    protected final Texture defaultTexture;
     protected Texture currentTexture;
 
     public ImageActor(final ItemID itemId, final Texture itemTexture) {
         super(itemTexture);
-        this.defaultTexture = itemTexture;
         this.itemId = itemId;
         this.setZIndex(5);
         this.setOrigin(1); // Set the origin to the center.

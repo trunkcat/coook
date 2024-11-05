@@ -10,8 +10,8 @@ import java.util.List;
 
 import io.trunkcat.cook.enums.ItemID;
 
-public class FoodHolder extends ImageActor {
-    public ItemID currentItem = null;
+public abstract class FoodHolder extends ImageActor {
+    public FoodItem currentItem = null;
     public List<ItemID> holdableItems;
     public boolean canBeServed = false;
 
@@ -45,22 +45,20 @@ public class FoodHolder extends ImageActor {
                     return;
                 }
 
-                //NOTE
-//                ImageActor targetActor = (ImageActor) target.getActor();
-//                //TODO: Trash?
-//
-                // if so, then this.remove(), and add/deduct the points.
+                //TODO: Trash?
+                // if so, then this.remove(), and deduct the points.
             }
         });
     }
 
-    public void holdItem(ImageActor actor) {
-        if (!canHoldItem(actor.itemId)) {
+    public void holdItem(FoodItem foodItem) {
+        if (!canHoldItem(foodItem.itemId)) {
             return;
         }
-        currentItem = actor.itemId;
-        // TODO: update the texture.
-        actor.remove();
+        currentItem = foodItem;
+        currentItem.setPosition(this.getX(), this.getY());
+        currentItem.setZIndex(this.getZIndex() + 1);
+        currentItem.setScale(3);
     }
 
     public void emptyHolder() {
@@ -68,8 +66,10 @@ public class FoodHolder extends ImageActor {
             return; // fast path to not set the texture.
         }
         currentItem = null;
-        updateTexture(defaultTexture);
+        updateTexture(getDefaultTexture());
     }
+
+    abstract Texture getDefaultTexture();
 
     public boolean canHoldItem(ItemID itemId) {
         return currentItem == null && holdableItems.contains(itemId);
@@ -78,5 +78,14 @@ public class FoodHolder extends ImageActor {
     // Makes sure that the generated actor is centered by the mouse.
     public void centerDragActorPosition() {
         dragAndDrop.setDragActorPosition(this.getWidth() / 2, -this.getHeight() / 2);
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        if (currentItem != null) {
+            currentItem.setPosition(this.getX(), this.getY());
+            currentItem.setZIndex(this.getZIndex() + 1);
+        }
     }
 }

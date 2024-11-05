@@ -9,17 +9,36 @@ import io.trunkcat.cook.exceptions.UncookableItemException;
 import io.trunkcat.cook.interfaces.Textures;
 
 public class FryingPan extends FoodCooker {
-    static final Texture TEXTURE = Textures.FryingPan.Steak.Empty;
+    static final Texture TEXTURE = Textures.FryingPan.Flameless;
     static final ItemID ITEM_ID = ItemID.FRYING_PAN;
+
+    private DragAndDrop dragAndDrop;
 
     public FryingPan(Stage stage, DragAndDrop dragAndDrop) {
         super(FryingPan.ITEM_ID, FryingPan.TEXTURE, stage, dragAndDrop);
+
+        this.dragAndDrop = dragAndDrop;
+    }
+
+    @Override
+    Texture getDefaultTexture() {
+        return Textures.FryingPan.Flameless;
+    }
+
+    @Override
+    public boolean isCookableItem(FoodItem item) {
+        switch (item.itemId) {
+            case PATTY:
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
     float getPreparationTime(ItemID itemID) throws UncookableItemException {
         switch (itemID) {
-            case BREAD_SLICE_FRIED:
+            case PATTY:
                 return 10;
             default:
                 throw new UncookableItemException(itemID.name() + " isn't cookable by " + this.itemId.name());
@@ -27,30 +46,29 @@ public class FryingPan extends FoodCooker {
     }
 
     @Override
-    ItemID getAfterCookedItem(ItemID itemID) throws UncookableItemException {
+    CookableFoodItem getAfterCookedItem(ItemID itemID) throws UncookableItemException {
         switch (itemID) {
-            case BREAD_SLICE:
-                return ItemID.BREAD_SLICE_FRIED;
+            case PATTY:
+                return new CookableFoodItem(ItemID.PATTY, Textures.Patty.Raw, dragAndDrop) {
+                    @Override
+                    Texture getStatusTexture() {
+                        switch (status) {
+                            case Cooking:
+                                return Textures.Patty.Cooking;
+                            case Cooked:
+                                return Textures.Patty.Cooked;
+                            case Overcooking:
+                                return Textures.Patty.Overcooking;
+                            case Ruined:
+                                return Textures.Patty.Ruined;
+                            case Raw:
+                            default:
+                                return Textures.Patty.Raw;
+                        }
+                    }
+                };
             default:
                 throw new UncookableItemException(itemID.name() + " isn't cookable by " + this.itemId.name());
-        }
-    }
-
-    @Override
-    Texture getStatusTexture() {
-        switch (status) {
-            case Empty:
-                return Textures.FryingPan.Steak.Empty;
-            case Cooking:
-                return Textures.FryingPan.Steak.Cooking;
-            case Cooked:
-                return Textures.FryingPan.Steak.Cooked;
-            case Overcooking:
-                return Textures.FryingPan.Steak.Overcooking;
-            case Ruined:
-                return Textures.FryingPan.Steak.Ruined;
-            default:
-                return Textures.FryingPan.Steak.Default;
         }
     }
 }

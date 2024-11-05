@@ -1,6 +1,5 @@
 package io.trunkcat.cook.components;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
@@ -15,11 +14,12 @@ import io.trunkcat.cook.enums.CustomerEmotion;
 import io.trunkcat.cook.enums.ItemID;
 import io.trunkcat.cook.exceptions.FoodNotOrderedException;
 import io.trunkcat.cook.interfaces.OtherConstants;
+import io.trunkcat.cook.interfaces.Textures;
 import io.trunkcat.cook.interfaces.TimeConstants;
 
 public class Customer extends ImageActor {
     static final ItemID ITEM_ID = ItemID.CUSTOMER;
-    static final Texture TEXTURE = new Texture(Gdx.files.internal("customer.png"));
+    static final Texture TEXTURE = Textures.Customers.Sunita.Happy;
 
     public CustomerEmotion emotion;
     public List<ItemID> ordersLeft;
@@ -47,7 +47,7 @@ public class Customer extends ImageActor {
                     return false;
 
                 FoodHolder foodHolder = (FoodHolder) payload.getDragActor();
-                if (foodHolder.currentItem != null && hasOrderedItem(foodHolder.currentItem)) {
+                if (foodHolder.currentItem != null && hasOrderedItem(foodHolder.currentItem.itemId)) {
                     // TODO: happy face when hover overs. for now, just scale them a bit.
                     // May be even show angry face if the dragged item isn't the one they ordered.
                     // and if the order isn't complete, then could show the disappointed face.
@@ -69,9 +69,9 @@ public class Customer extends ImageActor {
                 if (payload == null || !(payload.getDragActor() instanceof FoodHolder))
                     return;
                 FoodHolder foodHolder = (FoodHolder) payload.getDragActor();
-                if (hasOrderedItem(foodHolder.currentItem)) {
+                if (hasOrderedItem(foodHolder.currentItem.itemId)) {
                     try {
-                        fulfillOrder(foodHolder.currentItem);
+                        fulfillOrder(foodHolder.currentItem.itemId);
                         foodHolder.currentItem = null;
                         foodHolder.remove();
                     } catch (FoodNotOrderedException e) {

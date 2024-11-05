@@ -2,13 +2,13 @@ package io.trunkcat.cook.enums;
 
 public enum ItemID {
     /* Food items */
-    BREAD_SLICE,
+    PATTY,
 
     /* Cooked Food items */
-    BREAD_SLICE_FRIED,
+
 
     /* Food collections */
-    BREAD_SLICE_TRAY,
+    PATTY_TRAY,
 
     /* Food holders */
     PLATE,

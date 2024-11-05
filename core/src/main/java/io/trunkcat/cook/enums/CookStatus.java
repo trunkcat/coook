@@ -1,7 +1,7 @@
 package io.trunkcat.cook.enums;
 
 public enum CookStatus {
-    Empty,
+    Raw,
     Cooking,
     Cooked,
     Overcooking,

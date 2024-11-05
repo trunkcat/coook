@@ -11,9 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 
 import java.util.Random;
 
-import io.trunkcat.cook.components.BreadSliceTray;
 import io.trunkcat.cook.components.Customer;
 import io.trunkcat.cook.components.FryingPan;
+import io.trunkcat.cook.components.PattyTray;
 import io.trunkcat.cook.components.Plate;
 import io.trunkcat.cook.enums.ItemID;
 
@@ -35,31 +35,41 @@ public class GameScreen implements Screen {
 
         this.rand = new Random();
 
+        Customer customer = new Customer(stage, dragAndDrop, new ItemID[]{ItemID.PATTY}, rand);
+        customer.setScale(8);
+        customer.setPosition(600, 500);
+        stage.addActor(customer);
+
         Texture tableTexture = new Texture(Gdx.files.internal("table.png"));
         Actor table = new Image(tableTexture);
         table.setSize(2000, 1000);
         table.setZIndex(0);
         stage.addActor(table);
 
-        BreadSliceTray breadSliceTray = new BreadSliceTray(5, stage, dragAndDrop);
-        breadSliceTray.setPosition(100, 200);
-        stage.addActor(breadSliceTray);
+        PattyTray pattyTray = new PattyTray(5, stage, dragAndDrop);
+        pattyTray.setPosition(100, 200);
+        pattyTray.setScale(4);
+        stage.addActor(pattyTray);
+
+        FryingPan pan1 = new FryingPan(stage, dragAndDrop);
+        pan1.setScale(3);
+        pan1.setPosition(1000, 300);
+        stage.addActor(pan1);
+
+        FryingPan pan2 = new FryingPan(stage, dragAndDrop);
+        pan2.setScale(3);
+        pan2.setPosition(1300, 300);
+        stage.addActor(pan2);
 
         Plate plate1 = new Plate(stage, dragAndDrop);
-        plate1.setPosition(500, 200);
+        plate1.setScale(4);
+        plate1.setPosition(1000, 100);
         stage.addActor(plate1);
 
         Plate plate2 = new Plate(stage, dragAndDrop);
-        plate2.setPosition(700, 200);
+        plate2.setScale(4);
+        plate2.setPosition(1300, 100);
         stage.addActor(plate2);
-
-        Customer customer = new Customer(stage, dragAndDrop, new ItemID[]{ItemID.BREAD_SLICE_FRIED, ItemID.BREAD_SLICE_FRIED}, rand);
-        customer.setPosition(200, 500);
-        stage.addActor(customer);
-
-        FryingPan pan = new FryingPan(stage, dragAndDrop);
-        pan.setPosition(1000, 300);
-        stage.addActor(pan);
 
         stage.act();
     }

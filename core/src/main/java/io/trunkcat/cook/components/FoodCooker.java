@@ -1,26 +1,27 @@
 package io.trunkcat.cook.components;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 
 import io.trunkcat.cook.enums.CookStatus;
 import io.trunkcat.cook.enums.ItemID;
 import io.trunkcat.cook.exceptions.UncookableItemException;
+import io.trunkcat.cook.interfaces.Textures;
 import io.trunkcat.cook.interfaces.TimeConstants;
 
 public abstract class FoodCooker extends ImageActor {
-    public ItemID currentlyPreparingItem = null;
+    public CookableFoodItem currentItem = null;
     private float preparationTime = 0f;
     private float overcookingTime = 0f;
 
-    public CookStatus status = CookStatus.Empty;
+    private final Stage stage;
 
     public FoodCooker(final ItemID itemID, final Texture texture,
                       final Stage stage, final DragAndDrop dragAndDrop) {
         super(itemID, texture);
 
+        this.stage = stage;
         emptyCooker();
 
         // Allow putting raw items to cook.
@@ -29,18 +30,18 @@ public abstract class FoodCooker extends ImageActor {
             public boolean drag(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
                 if (payload == null) return false;
 
-                if (status != CookStatus.Empty) return false;
+                if (currentItem != null) return false;
 
-                if (payload.getDragActor() instanceof FoodItem) {
-                    FoodItem foodItem = (FoodItem) payload.getDragActor();
-                    if (isCookableItem(foodItem.itemId)) {
-                        foodItem.setScale(1.25f);
+                if (payload.getDragActor() instanceof CookableFoodItem) {
+                    CookableFoodItem foodItem = (CookableFoodItem) payload.getDragActor();
+                    if (isCookableItem(foodItem)) {
+                        foodItem.setScale(4.f);
                         return true;
                     }
                 } else if (payload.getDragActor() instanceof FoodHolder) {
                     FoodHolder foodHolder = (FoodHolder) payload.getDragActor();
                     if (foodHolder.currentItem != null && isCookableItem(foodHolder.currentItem)) {
-                        foodHolder.setScale(1.25f);
+                        foodHolder.setScale(4.f);
                         return true;
                     }
                 }
@@ -52,15 +53,16 @@ public abstract class FoodCooker extends ImageActor {
             public void reset(DragAndDrop.Source source, DragAndDrop.Payload payload) {
                 super.reset(source, payload);
                 if (payload == null) return;
-                if (payload.getDragActor() instanceof FoodItem) {
-                    FoodItem foodItem = (FoodItem) payload.getDragActor();
-                    if (isCookableItem(foodItem.itemId)) {
-                        foodItem.setScale(1.f);
+
+                if (payload.getDragActor() instanceof CookableFoodItem) {
+                    CookableFoodItem foodItem = (CookableFoodItem) payload.getDragActor();
+                    if (isCookableItem(foodItem)) {
+                        foodItem.setScale(3.f);
                     }
                 } else if (payload.getDragActor() instanceof FoodHolder) {
                     FoodHolder foodHolder = (FoodHolder) payload.getDragActor();
                     if (foodHolder.currentItem != null && isCookableItem(foodHolder.currentItem)) {
-                        foodHolder.setScale(1.f);
+                        foodHolder.setScale(3.f);
                     }
                 }
             }
@@ -69,23 +71,21 @@ public abstract class FoodCooker extends ImageActor {
             public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
                 if (payload == null) return;
 
-                if (status != CookStatus.Empty) return;
+                if (currentItem != null) return;
 
-                if (payload.getDragActor() instanceof FoodItem) {
-                    FoodItem foodItem = (FoodItem) payload.getDragActor();
-                    if (isCookableItem(foodItem.itemId)) {
-                        putItemToCook(foodItem.itemId);
-                        foodItem.setScale(1.f);
+                if (payload.getDragActor() instanceof CookableFoodItem) {
+                    CookableFoodItem foodItem = (CookableFoodItem) payload.getDragActor();
+                    if (isCookableItem(foodItem)) {
+                        putItemToCook(foodItem);
                         foodItem.remove();
                     }
                 } else if (payload.getDragActor() instanceof FoodHolder) {
                     FoodHolder foodHolder = (FoodHolder) payload.getDragActor();
-                    if ((status == CookStatus.Cooked || status == CookStatus.Overcooking) &&
-                        foodHolder.canHoldItem(currentlyPreparingItem)) {
+                    if ((currentItem.status == CookStatus.Cooked || currentItem.status == CookStatus.Overcooking) &&
+                        foodHolder.canHoldItem(currentItem.itemId)) {
                         // If the plate is coming to receive the item from the cooker:
-                        foodHolder.currentItem = currentlyPreparingItem;
+                        foodHolder.holdItem(currentItem);
                         emptyCooker();
-                        // foodHolder.updateTexture();
                     } else if (isCookableItem(foodHolder.currentItem)) {
                         // If the plate has something that can be cooked:
                         putItemToCook(foodHolder.currentItem);
@@ -97,38 +97,60 @@ public abstract class FoodCooker extends ImageActor {
         });
 
         // Only allow dragging if the cooking is finished.
-        dragAndDrop.addSource(new DragAndDrop.Source(this) {
-            float startX = 0f, startY = 0f;
-
-            @Override
-            public DragAndDrop.Payload dragStart(InputEvent event, float x, float y, int pointer) {
-                // If there's nothing to take, then nothing to drag.
-                if (status == CookStatus.Empty || status == CookStatus.Cooking) return null;
-//                startX =
-
-                return null;
-            }
-
-            @Override
-            public void drag(InputEvent event, float x, float y, int pointer) {
-                super.drag(event, x, y, pointer);
-            }
-
-            @Override
-            public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Payload payload, DragAndDrop.Target target) {
-                super.dragStop(event, x, y, pointer, payload, target);
-            }
-        });
+//        dragAndDrop.addSource(new DragAndDrop.Source(this) {
+//            float startX = 0f, startY = 0f;
+//
+//            @Override
+//            public DragAndDrop.Payload dragStart(InputEvent event, float x, float y, int pointer) {
+//                // If there's nothing to take, then nothing to drag.
+//                if (currentItem == null) return null;
+//                // Can't be taken if it is not cooked yet.
+//                if (currentItem.status == CookStatus.Raw || currentItem.status == CookStatus.Cooking)
+//                    return null;
+//
+//                System.out.println("done");
+//                currentItem.isCookingPaused = true;
+//
+//                // Set the current food item as the draggable actor.
+//                DragAndDrop.Payload payload = new DragAndDrop.Payload();
+//                currentItem.setVisible(true);
+//                payload.setDragActor(currentItem);
+//
+//                return payload;
+//            }
+//
+//            @Override
+//            public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Payload payload, DragAndDrop.Target target) {
+//                super.dragStop(event, x, y, pointer, payload, target);
+//
+//                currentItem.isCookingPaused = false;
+//                if (target == null || payload == null) return;
+//                if (!(target.getActor() instanceof FoodHolder)) return;
+//
+//                currentItem.isCookingPaused = true;
+//                FoodItem item = (FoodItem) payload.getDragActor();
+//                FoodHolder holder = (FoodHolder) target.getActor();
+//                holder.currentItem = item;
+//                item.setVisible(false);
+//            }
+//        });
     }
 
-    public void putItemToCook(ItemID item) {
+    public void putItemToCook(FoodItem item) {
         try {
-            this.currentlyPreparingItem = getAfterCookedItem(item);
-            this.preparationTime = getPreparationTime(currentlyPreparingItem);
-            this.overcookingTime = 0f;
-            this.status = CookStatus.Cooking;
+            currentItem = getAfterCookedItem(item.itemId);
+            currentItem.status = CookStatus.Cooking;
+            preparationTime = getPreparationTime(currentItem.itemId);
+            currentItem.setPosition(this.getX(), this.getY());
+            currentItem.setZIndex(this.getZIndex() + 1);
+            currentItem.setScale(3);
+            stage.addActor(currentItem);
+            currentItem.isCookingPaused = false;
+
+
+            updateTexture(Textures.FryingPan.Flame1);
             //TODO: calculate the update the texture to the cook state.
-            // maybe add some smooth steam as well.
+            // maybe add some smooth steam as well. and FIRE!
         } catch (UncookableItemException e) {
             // Item can't be cooked, so it should return false, which means, it hasn't been
             // put to the cooker for cooking yet. Drag handler should see this value, and should
@@ -137,55 +159,51 @@ public abstract class FoodCooker extends ImageActor {
     }
 
     public void emptyCooker() {
-        preparationTime = 0f;
-        overcookingTime = 0f;
-        currentlyPreparingItem = null;
-        status = CookStatus.Empty;
-        updateTexture(defaultTexture);
+        currentItem = null;
+        updateTexture(getDefaultTexture());
     }
+
+    abstract Texture getDefaultTexture();
+
+    public abstract boolean isCookableItem(FoodItem item);
 
     @Override
     public void act(float delta) {
         super.act(delta);
 
-        Texture statusTexture = getStatusTexture();
-        if (statusTexture != currentTexture) {
-            System.out.println("changing texture... " + status.name());
-            updateTexture(statusTexture);
-        }
+        if (currentItem != null) {
+            if (currentItem.isCookingPaused) return;
 
-        if (status == CookStatus.Empty) {
-        } else if (status == CookStatus.Cooking) {
-            preparationTime -= delta;
-            if (preparationTime <= 0f) {
-                preparationTime = 0f;
-                status = CookStatus.Cooked;
-                overcookingTime = 0f;
+            Texture statusTexture = currentItem.getStatusTexture();
+            if (statusTexture != currentItem.currentTexture) {
+                System.out.println("changing texture... " + currentItem.status.name());
+                currentItem.updateTexture(statusTexture);
             }
-        } else if (status == CookStatus.Cooked) {
-            overcookingTime += delta;
-            if (overcookingTime >= TimeConstants.TIME_BEFORE_OVERCOOKING) {
-                status = CookStatus.Overcooking;
-                overcookingTime = 0f;
-            }
-        } else if (status == CookStatus.Overcooking) {
-            overcookingTime += delta;
-            if (overcookingTime >= TimeConstants.TIME_BEFORE_RUINED) {
-                status = CookStatus.Ruined;
-                overcookingTime = 0f;
+
+            if (currentItem.status == CookStatus.Raw) {
+            } else if (currentItem.status == CookStatus.Cooking) {
+                preparationTime -= delta;
+                if (preparationTime <= 0f) {
+                    preparationTime = 0f;
+                    currentItem.status = CookStatus.Cooked;
+                    overcookingTime = 0f;
+                }
+            } else if (currentItem.status == CookStatus.Cooked) {
+                overcookingTime += delta;
+                if (overcookingTime >= TimeConstants.TIME_BEFORE_OVERCOOKING) {
+                    currentItem.status = CookStatus.Overcooking;
+                    overcookingTime = 0f;
+                }
+            } else if (currentItem.status == CookStatus.Overcooking) {
+                overcookingTime += delta;
+                if (overcookingTime >= TimeConstants.TIME_BEFORE_RUINED) {
+                    currentItem.status = CookStatus.Ruined;
+                    overcookingTime = 0f;
+                }
             }
         }
     }
 
-    public boolean isCookableItem(ItemID itemID) {
-        if (itemID == null) return false;
-        try {
-            getAfterCookedItem(itemID);
-            return true;
-        } catch (UncookableItemException e) {
-            return false;
-        }
-    }
 
     // NOTE: should return the time required for the items that it can cook (in seconds).
     //  Otherwise, it should throw an UncookableItemException, which should be handled by
@@ -194,8 +212,5 @@ public abstract class FoodCooker extends ImageActor {
     abstract float getPreparationTime(ItemID itemID) throws UncookableItemException;
 
     // Uncooked item ID -> Cooked item ID.
-    abstract ItemID getAfterCookedItem(ItemID itemID) throws UncookableItemException;
-
-    // -> Texture
-    abstract Texture getStatusTexture();
+    abstract CookableFoodItem getAfterCookedItem(ItemID itemID) throws UncookableItemException;
 }

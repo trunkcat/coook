@@ -13,7 +13,6 @@ import io.trunkcat.cook.enums.ItemID;
 public abstract class FoodHolder extends ImageActor {
     public FoodItem currentItem = null;
     public List<ItemID> holdableItems;
-    public boolean canBeServed = false;
 
     final DragAndDrop dragAndDrop;
 
@@ -30,16 +29,14 @@ public abstract class FoodHolder extends ImageActor {
                 startX = FoodHolder.this.getX();
                 startY = FoodHolder.this.getY();
                 DragAndDrop.Payload payload = new DragAndDrop.Payload();
-                centerDragActorPosition();
-                setZIndex(100);
                 payload.setDragActor(FoodHolder.this);
+                centerDragActorPosition();
                 return payload;
             }
 
             @Override
             public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Payload payload, DragAndDrop.Target target) {
                 super.dragStop(event, x, y, pointer, payload, target);
-                setZIndex(5);
                 if (target == null || (!(target.getActor() instanceof Customer) && !(target.getActor() instanceof FoodHolder))) { // NOTE: only customer
                     FoodHolder.this.setPosition(startX, startY);
                     return;
@@ -58,7 +55,6 @@ public abstract class FoodHolder extends ImageActor {
         currentItem = foodItem;
         currentItem.setPosition(this.getX(), this.getY());
         currentItem.setZIndex(this.getZIndex() + 1);
-        currentItem.setScale(3);
     }
 
     public void emptyHolder() {

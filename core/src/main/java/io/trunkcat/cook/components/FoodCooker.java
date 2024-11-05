@@ -1,8 +1,10 @@
 package io.trunkcat.cook.components;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
+import com.badlogic.gdx.utils.Align;
 
 import io.trunkcat.cook.enums.CookStatus;
 import io.trunkcat.cook.enums.ItemID;
@@ -16,12 +18,15 @@ public abstract class FoodCooker extends ImageActor {
     private float overcookingTime = 0f;
 
     private final Stage stage;
+    private final DragAndDrop dragAndDrop;
 
     public FoodCooker(final ItemID itemID, final Texture texture,
                       final Stage stage, final DragAndDrop dragAndDrop) {
         super(itemID, texture);
 
         this.stage = stage;
+        this.dragAndDrop = dragAndDrop;
+
         emptyCooker();
 
         // Allow putting raw items to cook.
@@ -35,13 +40,14 @@ public abstract class FoodCooker extends ImageActor {
                 if (payload.getDragActor() instanceof CookableFoodItem) {
                     CookableFoodItem foodItem = (CookableFoodItem) payload.getDragActor();
                     if (isCookableItem(foodItem)) {
-                        foodItem.setScale(4.f);
+                        foodItem.setScale(1.2f);
                         return true;
                     }
                 } else if (payload.getDragActor() instanceof FoodHolder) {
                     FoodHolder foodHolder = (FoodHolder) payload.getDragActor();
                     if (foodHolder.currentItem != null && isCookableItem(foodHolder.currentItem)) {
-                        foodHolder.setScale(4.f);
+                        foodHolder.setScale(1.2f);
+                        foodHolder.setOrigin(Align.center);
                         return true;
                     }
                 }
@@ -57,12 +63,12 @@ public abstract class FoodCooker extends ImageActor {
                 if (payload.getDragActor() instanceof CookableFoodItem) {
                     CookableFoodItem foodItem = (CookableFoodItem) payload.getDragActor();
                     if (isCookableItem(foodItem)) {
-                        foodItem.setScale(3.f);
+                        foodItem.setScale(1.f);
                     }
                 } else if (payload.getDragActor() instanceof FoodHolder) {
                     FoodHolder foodHolder = (FoodHolder) payload.getDragActor();
                     if (foodHolder.currentItem != null && isCookableItem(foodHolder.currentItem)) {
-                        foodHolder.setScale(3.f);
+                        foodHolder.setScale(1.f);
                     }
                 }
             }
@@ -95,60 +101,73 @@ public abstract class FoodCooker extends ImageActor {
                 }
             }
         });
-
-        // Only allow dragging if the cooking is finished.
-//        dragAndDrop.addSource(new DragAndDrop.Source(this) {
-//            float startX = 0f, startY = 0f;
-//
-//            @Override
-//            public DragAndDrop.Payload dragStart(InputEvent event, float x, float y, int pointer) {
-//                // If there's nothing to take, then nothing to drag.
-//                if (currentItem == null) return null;
-//                // Can't be taken if it is not cooked yet.
-//                if (currentItem.status == CookStatus.Raw || currentItem.status == CookStatus.Cooking)
-//                    return null;
-//
-//                System.out.println("done");
-//                currentItem.isCookingPaused = true;
-//
-//                // Set the current food item as the draggable actor.
-//                DragAndDrop.Payload payload = new DragAndDrop.Payload();
-//                currentItem.setVisible(true);
-//                payload.setDragActor(currentItem);
-//
-//                return payload;
-//            }
-//
-//            @Override
-//            public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Payload payload, DragAndDrop.Target target) {
-//                super.dragStop(event, x, y, pointer, payload, target);
-//
-//                currentItem.isCookingPaused = false;
-//                if (target == null || payload == null) return;
-//                if (!(target.getActor() instanceof FoodHolder)) return;
-//
-//                currentItem.isCookingPaused = true;
-//                FoodItem item = (FoodItem) payload.getDragActor();
-//                FoodHolder holder = (FoodHolder) target.getActor();
-//                holder.currentItem = item;
-//                item.setVisible(false);
-//            }
-//        });
     }
 
     public void putItemToCook(FoodItem item) {
         try {
             currentItem = getAfterCookedItem(item.itemId);
+
+            // Only allow dragging if the cooking is finished.
+            currentItem.dragSource = new DragAndDrop.Source(currentItem) {
+                float startX = 0f, startY = 0f;
+
+                @Override
+                public DragAndDrop.Payload dragStart(InputEvent event, float x, float y, int pointer) {
+                    startX = currentItem.getX();
+                    startY = currentItem.getY();
+
+                    // Can't be taken if it is not cooked yet.
+                    if (currentItem.status == CookStatus.Raw || currentItem.status == CookStatus.Cooking)
+                        return null;
+
+                    currentItem.isCookingPaused = true;
+
+                    // Set the current food item as the draggable actor.
+                    DragAndDrop.Payload payload = new DragAndDrop.Payload();
+                    dragAndDrop.setDragActorPosition(currentItem.getWidth() / 2, -currentItem.getHeight() / 2);
+                    currentItem.setVisible(true);
+                    payload.setDragActor(currentItem);
+
+                    return payload;
+                }
+
+                @Override
+                public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Payload payload, DragAndDrop.Target target) {
+                    super.dragStop(event, x, y, pointer, payload, target);
+
+                    currentItem.isCookingPaused = false;
+                    if (target == null || payload == null) {
+                        currentItem.setPosition(startX, startY);
+                        return;
+                    }
+                    if (!(target.getActor() instanceof FoodHolder)) {
+                        currentItem.setPosition(startX, startY);
+                        return;
+                    }
+
+                    currentItem.isCookingPaused = true;
+                    updateTexture(Textures.FryingPan.Flameless);
+
+                    FoodItem item = (FoodItem) payload.getDragActor();
+                    FoodHolder holder = (FoodHolder) target.getActor();
+                    holder.currentItem = item;
+
+                    dragAndDrop.removeSource(currentItem.dragSource);
+                }
+            };
+            dragAndDrop.addSource(currentItem.dragSource);
+
             currentItem.status = CookStatus.Cooking;
             preparationTime = getPreparationTime(currentItem.itemId);
             currentItem.setPosition(this.getX(), this.getY());
             currentItem.setZIndex(this.getZIndex() + 1);
-            currentItem.setScale(3);
-            stage.addActor(currentItem);
+            currentItem.setSize(200, 200);
+            currentItem.setOrigin(Align.center);
             currentItem.isCookingPaused = false;
-
+            stage.addActor(currentItem);
 
             updateTexture(Textures.FryingPan.Flame1);
+
             //TODO: calculate the update the texture to the cook state.
             // maybe add some smooth steam as well. and FIRE!
         } catch (UncookableItemException e) {
@@ -172,13 +191,13 @@ public abstract class FoodCooker extends ImageActor {
         super.act(delta);
 
         if (currentItem != null) {
-            if (currentItem.isCookingPaused) return;
-
             Texture statusTexture = currentItem.getStatusTexture();
             if (statusTexture != currentItem.currentTexture) {
                 System.out.println("changing texture... " + currentItem.status.name());
                 currentItem.updateTexture(statusTexture);
             }
+
+            if (currentItem.isCookingPaused) return;
 
             if (currentItem.status == CookStatus.Raw) {
             } else if (currentItem.status == CookStatus.Cooking) {
@@ -199,11 +218,11 @@ public abstract class FoodCooker extends ImageActor {
                 if (overcookingTime >= TimeConstants.TIME_BEFORE_RUINED) {
                     currentItem.status = CookStatus.Ruined;
                     overcookingTime = 0f;
+                    currentItem.isCookingPaused = true;
                 }
             }
         }
     }
-
 
     // NOTE: should return the time required for the items that it can cook (in seconds).
     //  Otherwise, it should throw an UncookableItemException, which should be handled by

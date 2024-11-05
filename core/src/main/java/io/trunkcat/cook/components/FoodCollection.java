@@ -26,15 +26,17 @@ public abstract class FoodCollection extends ImageActor {
 
                 DragAndDrop.Payload payload = new DragAndDrop.Payload();
                 Actor actor = generateActor();
+                payload.setDragActor(actor);
                 centerDragActorPosition(actor);
                 stage.addActor(actor);
-                payload.setDragActor(actor);
                 return payload;
             }
 
             @Override
             public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Payload payload, DragAndDrop.Target target) {
                 super.dragStop(event, x, y, pointer, payload, target);
+                if (payload == null || payload.getDragActor() == null) return;
+
                 if (!(payload.getDragActor() instanceof FoodItem)) {
                     System.err.println("DRAGGING BUT NOT A FOOD ITEM? INVESTIGATE!");
                     return;
@@ -56,6 +58,20 @@ public abstract class FoodCollection extends ImageActor {
                     // Reduce the item from the inventory.
                     FoodCollection.this.availableCount--;
                 }
+//                if (payload == null || target == null) {
+//                    return;
+//                }
+//
+//                if (!(payload.getDragActor() instanceof FoodItem)) {
+//                    System.err.println("DRAGGING but not a food item!?? come on!");
+//                    return;
+//                }
+//
+//                if (target.getActor() instanceof FoodHolder) {
+//                    FoodItem foodItem = (FoodItem) target.getActor();
+//                } else if (target.getActor() instanceof FoodHolder) {
+//                    FoodHolder foodHolder = (FoodHolder) target.getActor();
+//                }
             }
         });
 

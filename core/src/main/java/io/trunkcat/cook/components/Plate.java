@@ -41,8 +41,8 @@ public class Plate extends FoodHolder {
                 if (!(payload.getDragActor() instanceof FoodItem)) return;
                 FoodItem actor = (FoodItem) payload.getDragActor();
                 holdItem(actor);
+                payload.setDragActor(null);
             }
-
         });
     }
 

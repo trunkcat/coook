@@ -51,7 +51,7 @@ public class Customer extends ImageActor {
                     // TODO: happy face when hover overs. for now, just scale them a bit.
                     // May be even show angry face if the dragged item isn't the one they ordered.
                     // and if the order isn't complete, then could show the disappointed face.
-                    setScale(1.1f);
+                    setScale(2f);
                     return true;
                 }
 

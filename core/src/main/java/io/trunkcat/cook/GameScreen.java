@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
+import com.badlogic.gdx.utils.Align;
 
 import java.util.Random;
 
@@ -36,8 +37,8 @@ public class GameScreen implements Screen {
         this.rand = new Random();
 
         Customer customer = new Customer(stage, dragAndDrop, new ItemID[]{ItemID.PATTY}, rand);
-        customer.setScale(8);
-        customer.setPosition(600, 500);
+        customer.setSize(500, 500);
+        customer.setPosition(600, 300);
         stage.addActor(customer);
 
         Texture tableTexture = new Texture(Gdx.files.internal("table.png"));
@@ -47,29 +48,21 @@ public class GameScreen implements Screen {
         stage.addActor(table);
 
         PattyTray pattyTray = new PattyTray(5, stage, dragAndDrop);
-        pattyTray.setPosition(100, 200);
-        pattyTray.setScale(4);
+        pattyTray.setPosition(0, 0);
+        pattyTray.setSize(400, 400);
         stage.addActor(pattyTray);
 
-        FryingPan pan1 = new FryingPan(stage, dragAndDrop);
-        pan1.setScale(3);
-        pan1.setPosition(1000, 300);
-        stage.addActor(pan1);
-
         FryingPan pan2 = new FryingPan(stage, dragAndDrop);
-        pan2.setScale(3);
-        pan2.setPosition(1300, 300);
+        pan2.setSize(200, 200);
+        pan2.setPosition(1300, 250);
+        pan2.setOrigin(Align.center);
         stage.addActor(pan2);
 
         Plate plate1 = new Plate(stage, dragAndDrop);
-        plate1.setScale(4);
-        plate1.setPosition(1000, 100);
+        plate1.setSize(300, 300);
+        plate1.setPosition(800, 50);
+        plate1.setOrigin(Align.center);
         stage.addActor(plate1);
-
-        Plate plate2 = new Plate(stage, dragAndDrop);
-        plate2.setScale(4);
-        plate2.setPosition(1300, 100);
-        stage.addActor(plate2);
 
         stage.act();
     }

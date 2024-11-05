@@ -14,7 +14,7 @@ public class CookGame extends Game {
     @Override
     public void create() {
         viewport = new ExtendViewport(2000, 1000);
-        this.setScreen(new GameScreen(this));
+        this.setScreen(new MenuScreen(this));
     }
 
     public void changeScreen(Screens screen) {

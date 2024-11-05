@@ -22,6 +22,9 @@ public class CookGame extends Game {
             case GAME:
                 this.setScreen(new GameScreen(this));
                 break;
+            case MAIN_MENU:
+                this.setScreen(new MenuScreen(this));
+                break;
         }
     }
 

@@ -18,4 +18,6 @@ public enum ItemID {
 
     /* Other actors */
     CUSTOMER,
+
+    MINION,
 }

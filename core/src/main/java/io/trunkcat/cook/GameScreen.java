@@ -35,6 +35,8 @@ public class GameScreen implements Screen {
 
         this.rand = new Random();
 
+        //background
+
         Customer customer = new Customer(stage, dragAndDrop, new ItemID[]{ItemID.PATTY}, rand);
         customer.setScale(8);
         customer.setPosition(600, 500);

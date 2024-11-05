@@ -19,7 +19,7 @@ import io.trunkcat.cook.interfaces.TimeConstants;
 
 public class Customer extends ImageActor {
     static final ItemID ITEM_ID = ItemID.CUSTOMER;
-    static final Texture TEXTURE = Textures.Customers.Sunita.Happy;
+    static Texture TEXTURE = Textures.Customers.Sunita.Happy;
 
     public CustomerEmotion emotion;
     public List<ItemID> ordersLeft;
@@ -47,10 +47,13 @@ public class Customer extends ImageActor {
                     return false;
 
                 FoodHolder foodHolder = (FoodHolder) payload.getDragActor();
-                if (foodHolder.currentItem != null && hasOrderedItem(foodHolder.currentItem.itemId)) {
+                if (foodHolder.currentItem != null && !hasOrderedItem(foodHolder.currentItem.itemId)) {
                     // TODO: happy face when hover overs. for now, just scale them a bit.
                     // May be even show angry face if the dragged item isn't the one they ordered.
-                    // and if the order isn't complete, then could show the disappointed face.
+                    // and if the order isn't complete, then could show the disappointed face
+//                    emotion = CustomerEmotion.Neutral;
+                    TEXTURE = Textures.Customers.Sunita.Neutral;
+                    updateTexture(TEXTURE);
                     setScale(1.1f);
                     return true;
                 }

@@ -1,0 +1,26 @@
+package io.trunkcat.cook.components;
+
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+
+import io.trunkcat.cook.enums.ItemID;
+
+public class ImageActor extends Image {
+    final ItemID itemId;
+    protected final Texture defaultTexture;
+    protected Texture currentTexture;
+
+    public ImageActor(final ItemID itemId, final Texture itemTexture) {
+        super(itemTexture);
+        this.defaultTexture = itemTexture;
+        this.itemId = itemId;
+        this.setZIndex(5);
+        this.setOrigin(1); // Set the origin to the center.
+    }
+
+    public void updateTexture(final Texture texture) {
+        this.currentTexture = texture;
+        this.setDrawable(new TextureRegionDrawable(texture));
+    }
+}

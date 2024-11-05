@@ -11,12 +11,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-public class MenuScreen implements Screen {
+
+public class SettingsScreen implements Screen {
 
     final CookGame game;
     final private Stage stage;
 
-    public MenuScreen(final CookGame game) {
+    public SettingsScreen(final CookGame game) {
         this.game = game;
         stage = new Stage(game.viewport);
         Gdx.input.setInputProcessor(stage);
@@ -33,29 +34,42 @@ public class MenuScreen implements Screen {
         buttonStyle.font = new BitmapFont();
         buttonStyle.fontColor = Color.WHITE;
 
-        TextButton resumeButton = new TextButton("START GAME", buttonStyle);
-        resumeButton.getLabel().setFontScale(5);
+        TextButton backButton = new TextButton("BACK", buttonStyle);
+        backButton.getLabel().setFontScale(5);
 //        resumeButton.setSize(100, 100);
-        resumeButton.setPosition(100, 400);
-        resumeButton.addListener(new ChangeListener() {
+        backButton.setPosition(100, 400);
+        backButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                MenuScreen.this.game.setScreen(new GameScreen(MenuScreen.this.game));
+                SettingsScreen.this.game.setScreen(new MenuScreen(SettingsScreen.this.game));
             }
         });
 
-        TextButton settingButton = new TextButton("SETTINGS", buttonStyle);
-        settingButton.getLabel().setFontScale(5);
-        settingButton.setPosition(100, 400);
-        settingButton.addListener(new ChangeListener() {
+        TextButton plusButton = new TextButton("+", buttonStyle);
+        plusButton.getLabel().setFontScale(5);
+        plusButton.setPosition(100, 400);
+        plusButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                MenuScreen.this.game.setScreen(new SettingsScreen((MenuScreen.this.game)));
+
             }
         });
-        table.add(resumeButton).padBottom(100);
+
+        TextButton minusButton = new TextButton("-", buttonStyle);
+        minusButton.getLabel().setFontScale(5);
+        minusButton.setPosition(100, 400);
+        minusButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+
+            }
+        });
+
+        table.add(backButton).padBottom(100);
         table.row();
-        table.add(settingButton).padTop(100);
+        table.add(plusButton).padTop(100).padRight(20);
+        table.row();
+        table.add(minusButton).padTop(100).padLeft(20);
         table.row();
     }
 

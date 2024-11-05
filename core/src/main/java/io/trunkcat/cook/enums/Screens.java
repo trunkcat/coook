@@ -4,4 +4,5 @@ public enum Screens {
     MAIN_MENU,
     PREFERENCES,
     GAME,
+    SettingsMenu
 }

@@ -39,7 +39,7 @@ public class GameScreen implements Screen {
 
         Music bgmusic = Gdx.audio.newMusic(Gdx.files.internal("audio/bgmusic.mp3"));
         bgmusic.play();
-        bgmusic.setLooping(true);   
+        bgmusic.setLooping(true);
 
         Texture Background = new Texture(Gdx.files.internal("bg.png"));
         Actor bg = new Image(Background);

@@ -36,6 +36,11 @@ public class GameScreen implements Screen {
 
         this.rand = new Random();
 
+        Texture Background = new Texture(Gdx.files.internal("bg.png"));
+        Actor bg = new Image(Background);
+        bg.setPosition(-50, -100); //dont question this placement pls
+        stage.addActor(bg);
+
         Customer customer = new Customer(stage, dragAndDrop, new ItemID[]{ItemID.PATTY}, rand);
         customer.setSize(500, 500);
         customer.setPosition(600, 300);

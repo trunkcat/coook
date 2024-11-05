@@ -21,6 +21,9 @@ public class Customer extends ImageActor {
     static final ItemID ITEM_ID = ItemID.CUSTOMER;
     static final Texture TEXTURE = Textures.Customers.Sunita.Happy;
 
+    //w
+   // static final Texture TEXTURE = Textures.Customers.Sunita.Impatient;
+
     public CustomerEmotion emotion;
     public List<ItemID> ordersLeft;
     public List<ItemID> ordersFulfilled;
@@ -112,5 +115,30 @@ public class Customer extends ImageActor {
         if (waitTime > 5) {
             this.initialTip -= delta; // TODO: round it afterwards
         }
+      //w
+        updateEmotion();
+        if (this.waitTime < this.maxPatience * 0.5) {
+            this.initialTip -= delta * 0.2;  // Deduct more tip if patience is low
+        }
+    //w
     }
+    //w
+    private float maxPatience;
+
+    private void updateEmotion() {
+        if (this.waitTime == this.maxPatience) {
+            this.emotion = CustomerEmotion.Happy;  // Full patience, happy
+        } else if (this.waitTime > this.maxPatience * 0.75) {
+            this.emotion = CustomerEmotion.Neutral;  // Some patience left, neutral
+        } else if(this.waitTime > this.maxPatience * 0.25) {
+            this.emotion = CustomerEmotion.Impatient;  // Less patience, disappointed
+        }
+    }
+
+
+
+    //w
+
+
 }
+

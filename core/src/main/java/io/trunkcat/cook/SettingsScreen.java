@@ -21,8 +21,8 @@ public class SettingsScreen implements Screen {
         this.game = game;
         stage = new Stage(game.viewport);
         Gdx.input.setInputProcessor(stage);
-
     }
+
     @Override
     public void show() {
         // Prepare your screen here.

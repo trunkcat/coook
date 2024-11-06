@@ -2,7 +2,7 @@ package io.trunkcat.cook;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -13,6 +13,8 @@ import com.badlogic.gdx.utils.Align;
 
 import java.util.Random;
 
+import io.trunkcat.cook.actors.customers.Ramesh;
+import io.trunkcat.cook.actors.customers.Sunita;
 import io.trunkcat.cook.components.BunTray;
 import io.trunkcat.cook.components.Customer;
 import io.trunkcat.cook.components.Dispenser;
@@ -40,10 +42,6 @@ public class GameScreen implements Screen {
 
         this.rand = new Random();
 
-        Music bgmusic = Gdx.audio.newMusic(Gdx.files.internal("audio/bgmusic.mp3"));
-        bgmusic.play();
-        bgmusic.setLooping(true);
-
         Texture backgroundTexture = new Texture(Gdx.files.internal("bg.png"));
         Image backgroundImage = new Image(backgroundTexture);
         backgroundImage.setPosition(0, 0);
@@ -51,19 +49,25 @@ public class GameScreen implements Screen {
         backgroundImage.addAction(Actions.alpha(0.75f)); // A little darkness might add some effect.
         stage.addActor(backgroundImage);
 
-        Customer customer1 = new Customer(stage, dragAndDrop, new ItemID[]{ItemID.BUN_PATTY}, rand);
+        Customer customer1 = new Sunita(stage, dragAndDrop, new ItemID[]{ItemID.BUN_PATTY}, rand);
         customer1.setSize(300, 450);
         customer1.setPosition(300, 500);
         stage.addActor(customer1);
 
-        Customer customer2 = new Customer(stage, dragAndDrop, new ItemID[]{ItemID.BUN_PATTY, ItemID.COLA_CUP}, rand);
+        Customer customer2 = new Ramesh(stage, dragAndDrop, new ItemID[]{ItemID.BUN_PATTY, ItemID.COLA_CUP}, rand);
         customer2.setSize(300, 450);
         customer2.setPosition(900, 500);
         stage.addActor(customer2);
 
-        Image counterTop = new Image(Textures.CounterTop);
-        counterTop.setSize(2000, 520);
-        stage.addActor(counterTop);
+        Image shelf = new Image(Textures.CounterTop);
+        shelf.setSize(2000, 520);
+        stage.addActor(shelf);
+
+        Image blackTint = new Image(Textures.CounterTop);
+        blackTint.addAction(Actions.color(Color.BLACK));
+        blackTint.addAction(Actions.alpha(0.5f));
+        blackTint.setSize(2000, 520);
+        stage.addActor(blackTint);
 
         PattyTray pattyTray = new PattyTray(5, stage, dragAndDrop);
         pattyTray.setPosition(0, 0);
@@ -76,10 +80,10 @@ public class GameScreen implements Screen {
         stage.addActor(bunTray);
 
         /* Table top */
-        Image shelf = new Image(Textures.CounterTop);
-        shelf.setSize(2000, 520);
-        shelf.setY(125);
-        stage.addActor(shelf);
+        Image counterTop = new Image(Textures.CounterTop);
+        counterTop.setSize(2000, 400);
+        counterTop.setY(150);
+        stage.addActor(counterTop);
 
         FryingPan pan1 = new FryingPan(stage, dragAndDrop);
         pan1.setSize(250, 250);

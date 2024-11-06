@@ -14,27 +14,26 @@ import io.trunkcat.cook.enums.CustomerEmotion;
 import io.trunkcat.cook.enums.ItemID;
 import io.trunkcat.cook.exceptions.FoodNotOrderedException;
 import io.trunkcat.cook.interfaces.OtherConstants;
-import io.trunkcat.cook.interfaces.Textures;
 import io.trunkcat.cook.interfaces.TimeConstants;
 
-public class Customer extends ImageActor {
-    static final ItemID ITEM_ID = ItemID.CUSTOMER;
-    static final Texture TEXTURE = Textures.Customers.Sunita.Happy;
-
+public abstract class Customer extends ImageActor {
     public CustomerEmotion emotion;
     public List<ItemID> ordersLeft;
     public List<ItemID> ordersFulfilled;
     public float initialTip;
     public int bill;
 
+    public float initialWaitTime;
+
     public float waitTime; // TODO: progress bar.
 
-    public Customer(final Stage stage, final DragAndDrop dragAndDrop, final ItemID[] orders, Random rand) {
-        super(Customer.ITEM_ID, Customer.TEXTURE);
+    public Customer(ItemID itemID, Texture itemTexture, final Stage stage, final DragAndDrop dragAndDrop, final ItemID[] orders, Random rand) {
+        super(itemID, itemTexture);
 
         this.ordersLeft = new ArrayList<>(Arrays.asList(orders));
         this.ordersFulfilled = new ArrayList<>();
-        this.waitTime = orders.length * TimeConstants.WAIT_UNIT_PER_ORDER * TimeConstants.SECOND_IN_SECONDS;
+        this.initialWaitTime = orders.length * TimeConstants.WAIT_UNIT_PER_ORDER * TimeConstants.SECOND_IN_SECONDS;
+        this.waitTime = initialWaitTime;
         this.emotion = CustomerEmotion.Happy;
         this.initialTip = rand.nextInt(OtherConstants.MAXIMUM_TIP - OtherConstants.MINIMUM_TIP + 1) + OtherConstants.MINIMUM_TIP;
 
@@ -62,8 +61,7 @@ public class Customer extends ImageActor {
                         return true;
                     }
                 }
-
-
+                
                 return false;
             }
 
@@ -136,5 +134,25 @@ public class Customer extends ImageActor {
         if (waitTime > 5) {
             this.initialTip -= delta; // TODO: round it afterwards
         }
+
+        // Update texture based on the time elapsed.
+        Texture statusTexture = getStatusTexture();
+        if (statusTexture != currentTexture) {
+            updateTexture(statusTexture);
+        }
+
+        float patiencePercent = (waitTime / initialWaitTime) * 100;
+        if (patiencePercent >= 60) {
+            emotion = CustomerEmotion.Happy;
+        } else if (patiencePercent >= 35) {
+            emotion = CustomerEmotion.Neutral;
+        } else if (patiencePercent > 0) {
+            emotion = CustomerEmotion.Impatient;
+        } else {
+            // When runs out of patience:
+            remove();
+        }
     }
+
+    abstract public Texture getStatusTexture();
 }

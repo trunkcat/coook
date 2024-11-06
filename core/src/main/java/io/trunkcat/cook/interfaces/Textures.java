@@ -11,7 +11,6 @@ public interface Textures {
     Texture PattyTray = TextureManager.loadAsset("fooditems/pattytray.png");
     Texture BunTray = TextureManager.loadAsset("foodholders/bun-tray.png");
     Texture Bun = TextureManager.loadAsset("fooditems/Burger/baseburger.png");
-    Texture BunWithPatty = TextureManager.loadAsset("fooditems/Burger/burgerwithpatty.png");
 
     Texture CounterTop = TextureManager.loadAsset("environment/counter_top.png");
 
@@ -32,6 +31,20 @@ public interface Textures {
                 Happy = TextureManager.loadAsset("customers/sunita_happy.png"),
                 Neutral = TextureManager.loadAsset("customers/sunita_neutral.png"),
                 Impatient = TextureManager.loadAsset("customers/sunita_impatient.png");
+        }
+
+        interface Muhammad {
+            Texture
+                Happy = TextureManager.loadAsset("customers/muhammad_happy.png"),
+                Neutral = TextureManager.loadAsset("customers/muhammad_neutral.png"),
+                Impatient = TextureManager.loadAsset("customers/muhammad_impatient.png");
+        }
+
+        interface Ramesh {
+            Texture
+                Happy = TextureManager.loadAsset("customers/ramesh_happy.png"),
+                Neutral = TextureManager.loadAsset("customers/ramesh_neutral.png"),
+                Impatient = TextureManager.loadAsset("customers/ramesh_impatient.png");
         }
     }
 

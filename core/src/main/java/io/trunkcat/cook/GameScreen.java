@@ -37,15 +37,6 @@ public class GameScreen implements Screen {
 
         this.rand = new Random();
 
-        Music bgmusic = Gdx.audio.newMusic(Gdx.files.internal("audio/bgmusic.mp3"));
-        bgmusic.play();
-        bgmusic.setLooping(true);
-
-        Texture Background = new Texture(Gdx.files.internal("bg.png"));
-        Actor bg = new Image(Background);
-        bg.setPosition(-50, -150); //dont question this placement pls
-        stage.addActor(bg);
-
         Customer customer = new Customer(stage, dragAndDrop, new ItemID[]{ItemID.PATTY}, rand);
         customer.setSize(500, 500);
         customer.setPosition(600, 300);
@@ -62,6 +53,11 @@ public class GameScreen implements Screen {
         pattyTray.setSize(400, 400);
         stage.addActor(pattyTray);
 
+        FryingPan pan1 = new FryingPan(stage, dragAndDrop);
+        pan1.setScale(3);
+        pan1.setPosition(1000, 300);
+        stage.addActor(pan1);
+
         FryingPan pan2 = new FryingPan(stage, dragAndDrop);
         pan2.setSize(200, 200);
         pan2.setPosition(1300, 250);
@@ -73,6 +69,11 @@ public class GameScreen implements Screen {
         plate1.setPosition(800, 50);
         plate1.setOrigin(Align.center);
         stage.addActor(plate1);
+
+        Plate plate2 = new Plate(stage, dragAndDrop);
+        plate2.setScale(4);
+        plate2.setPosition(1300, 100);
+        stage.addActor(plate2);
 
         stage.act();
     }

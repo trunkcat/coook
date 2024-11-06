@@ -21,9 +21,6 @@ public class Customer extends ImageActor {
     static final ItemID ITEM_ID = ItemID.CUSTOMER;
     static final Texture TEXTURE = Textures.Customers.Sunita.Happy;
 
-    //w
-   // static final Texture TEXTURE = Textures.Customers.Sunita.Impatient;
-
     public CustomerEmotion emotion;
     public List<ItemID> ordersLeft;
     public List<ItemID> ordersFulfilled;
@@ -54,7 +51,7 @@ public class Customer extends ImageActor {
                     // TODO: happy face when hover overs. for now, just scale them a bit.
                     // May be even show angry face if the dragged item isn't the one they ordered.
                     // and if the order isn't complete, then could show the disappointed face.
-                    setScale(2f);
+                    setScale(1.1f);
                     return true;
                 }
 
@@ -115,30 +112,5 @@ public class Customer extends ImageActor {
         if (waitTime > 5) {
             this.initialTip -= delta; // TODO: round it afterwards
         }
-      //w
-        updateEmotion();
-        if (this.waitTime < this.maxPatience * 0.5) {
-            this.initialTip -= delta * 0.2;  // Deduct more tip if patience is low
-        }
-    //w
     }
-    //w
-    private float maxPatience;
-
-    private void updateEmotion() {
-        if (this.waitTime == this.maxPatience) {
-            this.emotion = CustomerEmotion.Happy;  // Full patience, happy
-        } else if (this.waitTime > this.maxPatience * 0.75) {
-            this.emotion = CustomerEmotion.Neutral;  // Some patience left, neutral
-        } else if(this.waitTime > this.maxPatience * 0.25) {
-            this.emotion = CustomerEmotion.Impatient;  // Less patience, disappointed
-        }
-    }
-
-
-
-    //w
-
-
 }
-

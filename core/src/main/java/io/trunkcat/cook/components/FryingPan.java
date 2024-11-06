@@ -26,8 +26,8 @@ public class FryingPan extends FoodCooker {
     }
 
     @Override
-    public boolean isCookableItem(FoodItem item) {
-        switch (item.itemId) {
+    public boolean isCookableItem(ItemID item) {
+        switch (item) {
             case PATTY:
                 return true;
             default:

@@ -6,7 +6,25 @@ import io.trunkcat.cook.TextureManager;
 
 public interface Textures {
     Texture Plate = TextureManager.loadAsset("foodholders/plate.png");
-    Texture Tray = TextureManager.loadAsset("foodholders/tray.png");
+    Texture PlateWithBun = TextureManager.loadAsset("foodholders/base-burger-plate.png");
+    Texture PlateWithBunAndPatty = TextureManager.loadAsset("foodholders/patty-burger-plate.png");
+    Texture PattyTray = TextureManager.loadAsset("fooditems/pattytray.png");
+    Texture BunTray = TextureManager.loadAsset("foodholders/bun-tray.png");
+    Texture Bun = TextureManager.loadAsset("fooditems/Burger/baseburger.png");
+    Texture BunWithPatty = TextureManager.loadAsset("fooditems/Burger/burgerwithpatty.png");
+
+    Texture CounterTop = TextureManager.loadAsset("environment/counter_top.png");
+
+    interface ColaCup {
+        Texture Empty = TextureManager.loadAsset("foodholders/cup.png"),
+            Full = TextureManager.loadAsset("foodholders/cup_full.png");
+    }
+
+    interface ColaDispenser {
+        Texture Sheet = TextureManager.loadAsset("foodmakers/dispenser-Sheet.png"),
+            Full = TextureManager.loadAsset("foodmakers/dispenser_full.png"),
+            Static = TextureManager.loadAsset("foodmakers/dispenser.png");
+    }
 
     interface Customers {
         interface Sunita {

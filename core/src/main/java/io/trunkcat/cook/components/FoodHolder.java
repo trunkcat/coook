@@ -8,10 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import java.util.Arrays;
 import java.util.List;
 
+import io.trunkcat.cook.enums.CookStatus;
 import io.trunkcat.cook.enums.ItemID;
+import io.trunkcat.cook.interfaces.Textures;
 
 public abstract class FoodHolder extends ImageActor {
-    public FoodItem currentItem = null;
+    public ItemID currentItem = null;
     public List<ItemID> holdableItems;
 
     final DragAndDrop dragAndDrop;
@@ -35,9 +37,24 @@ public abstract class FoodHolder extends ImageActor {
             }
 
             @Override
+            public void drag(InputEvent event, float x, float y, int pointer) {
+                super.drag(event, x, y, pointer);
+
+//                if (currentItem != null) {
+//                    currentItem.setPosition(getX(), getY());
+//                    currentItem.setZIndex(getZIndex() + 1);
+//                }
+            }
+
+            @Override
             public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Payload payload, DragAndDrop.Target target) {
                 super.dragStop(event, x, y, pointer, payload, target);
-                if (target == null || (!(target.getActor() instanceof Customer) && !(target.getActor() instanceof FoodHolder))) { // NOTE: only customer
+
+                if (target == null) {
+                    FoodHolder.this.setPosition(startX, startY);
+                    return;
+                }
+                if (!(target.getActor() instanceof Customer) && !(target.getActor() instanceof FoodCooker)) { // NOTE: only customer
                     FoodHolder.this.setPosition(startX, startY);
                     return;
                 }
@@ -49,12 +66,28 @@ public abstract class FoodHolder extends ImageActor {
     }
 
     public void holdItem(FoodItem foodItem) {
-        if (!canHoldItem(foodItem.itemId)) {
-            return;
+        if (foodItem.itemId == ItemID.BUN) {
+            this.currentItem = ItemID.BUN;
+            updateTexture(Textures.PlateWithBun);
+        } else if (foodItem instanceof CookableFoodItem) {
+            CookableFoodItem item = (CookableFoodItem) foodItem;
+            if (item.status != CookStatus.Cooked && item.status != CookStatus.Overcooking) {
+                return; // Only allow the coooked items to be held.
+            }
+            if (foodItem.itemId == ItemID.PATTY && currentItem == ItemID.BUN) {
+                this.currentItem = ItemID.BUN_PATTY;
+                updateTexture(Textures.PlateWithBunAndPatty);
+            }
         }
-        currentItem = foodItem;
-        currentItem.setPosition(this.getX(), this.getY());
-        currentItem.setZIndex(this.getZIndex() + 1);
+//        if (!canHoldItem(currentItem.itemId)) {
+//            return;
+//        }
+//        if (foodItem instanceof CookableFoodItem && ((CookableFoodItem) foodItem).dragSource != null) {
+//            dragAndDrop.removeSource(((CookableFoodItem) foodItem).dragSource);
+//        }
+//        currentItem = foodItem;
+//        currentItem.setPosition(this.getX(), this.getY());
+//        currentItem.setZIndex(this.getZIndex() + 1);
     }
 
     public void emptyHolder() {
@@ -79,9 +112,10 @@ public abstract class FoodHolder extends ImageActor {
     @Override
     public void act(float delta) {
         super.act(delta);
-        if (currentItem != null) {
-            currentItem.setPosition(this.getX(), this.getY());
-            currentItem.setZIndex(this.getZIndex() + 1);
-        }
+
+//        if (currentItem != null) {
+//            currentItem.setPosition(this.getX(), this.getY());
+//            currentItem.setZIndex(this.getZIndex() + 1);
+//        }
     }
 }

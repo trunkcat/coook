@@ -1,6 +1,7 @@
 package io.trunkcat.cook.components;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -8,7 +9,7 @@ import com.badlogic.gdx.utils.Align;
 import io.trunkcat.cook.enums.ItemID;
 
 public class ImageActor extends Image {
-    final ItemID itemId;
+    ItemID itemId;
     protected Texture currentTexture;
 
     public ImageActor(final ItemID itemId, final Texture itemTexture) {
@@ -21,5 +22,10 @@ public class ImageActor extends Image {
     public void updateTexture(final Texture texture) {
         this.currentTexture = texture;
         this.setDrawable(new TextureRegionDrawable(texture));
+    }
+
+    public void updateTexture(final TextureRegion region) {
+        this.currentTexture = region.getTexture();
+        this.setDrawable(new TextureRegionDrawable(region));
     }
 }

@@ -14,7 +14,7 @@ public class Plate extends FoodHolder {
     public Plate(final Stage stage, final DragAndDrop dragAndDrop) {
         //TODO change the array to a abstract method inside `FoodHolder`.
         // so that it supports the complex recipes.
-        super(Plate.ITEM_ID, Plate.TEXTURE, new ItemID[]{ItemID.PATTY}, stage, dragAndDrop);
+        super(Plate.ITEM_ID, Plate.TEXTURE, new ItemID[]{ItemID.BUN, ItemID.BUN_PATTY}, stage, dragAndDrop);
 
         dragAndDrop.addTarget(new DragAndDrop.Target(this) {
             @Override
@@ -23,7 +23,7 @@ public class Plate extends FoodHolder {
                     return false;
                 }
                 FoodItem actor = (FoodItem) payload.getDragActor();
-                if (canHoldItem(actor.itemId)) { // TODO: change to abstract.
+                if (actor.itemId == ItemID.BUN || actor.itemId == ItemID.PATTY) { // TODO: change to abstract.
                     setScale(1.08f);
                     return true;
                 }
@@ -39,8 +39,9 @@ public class Plate extends FoodHolder {
             @Override
             public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
                 if (!(payload.getDragActor() instanceof FoodItem)) return;
-                FoodItem actor = (FoodItem) payload.getDragActor();
-                holdItem(actor);
+                FoodItem foodItem = (FoodItem) payload.getDragActor();
+                holdItem(foodItem);
+                foodItem.remove();
                 payload.setDragActor(null);
             }
         });

@@ -43,17 +43,26 @@ public class Customer extends ImageActor {
         dragAndDrop.addTarget(new DragAndDrop.Target(this) {
             @Override
             public boolean drag(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
-                if (payload == null || !(payload.getDragActor() instanceof FoodHolder))
+                if (payload == null)
                     return false;
 
-                FoodHolder foodHolder = (FoodHolder) payload.getDragActor();
-                if (foodHolder.currentItem != null && hasOrderedItem(foodHolder.currentItem.itemId)) {
-                    // TODO: happy face when hover overs. for now, just scale them a bit.
-                    // May be even show angry face if the dragged item isn't the one they ordered.
-                    // and if the order isn't complete, then could show the disappointed face.
-                    setScale(1.1f);
-                    return true;
+                if (payload.getDragActor() instanceof FoodHolder) {
+                    FoodHolder foodHolder = (FoodHolder) payload.getDragActor();
+                    if (foodHolder.currentItem != null && hasOrderedItem(foodHolder.currentItem)) {
+                        // TODO: happy face when hover overs. for now, just scale them a bit.
+                        // May be even show angry face if the dragged item isn't the one they ordered.
+                        // and if the order isn't complete, then could show the disappointed face.
+                        setScale(1.1f);
+                        return true;
+                    }
+                } else if (payload.getDragActor() instanceof ColaCup) {
+                    ColaCup colaCup = (ColaCup) payload.getDragActor();
+                    if (hasOrderedItem(colaCup.itemId)) {
+                        setScale(1.1f);
+                        return true;
+                    }
                 }
+
 
                 return false;
             }
@@ -66,18 +75,33 @@ public class Customer extends ImageActor {
 
             @Override
             public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
-                if (payload == null || !(payload.getDragActor() instanceof FoodHolder))
+                if (payload == null)
                     return;
-                FoodHolder foodHolder = (FoodHolder) payload.getDragActor();
-                if (hasOrderedItem(foodHolder.currentItem.itemId)) {
-                    try {
-                        fulfillOrder(foodHolder.currentItem.itemId);
-                        foodHolder.currentItem = null;
-                        foodHolder.remove();
-                    } catch (FoodNotOrderedException e) {
-                        throw new RuntimeException(e);
+
+                if (payload.getDragActor() instanceof FoodHolder) {
+                    FoodHolder foodHolder = (FoodHolder) payload.getDragActor();
+                    if (hasOrderedItem(foodHolder.currentItem)) {
+                        try {
+                            System.out.println("fulfilling " + foodHolder.currentItem.name());
+                            fulfillOrder(foodHolder.currentItem);
+                            foodHolder.currentItem = null;
+                            foodHolder.remove();
+                        } catch (FoodNotOrderedException e) {
+                            return;
+                        }
                     }
                 }
+//                else if (payload.getDragActor() instanceof ColaCup) {
+//                    ColaCup colaCup = (ColaCup) payload.getDragActor();
+//                    if (hasOrderedItem(colaCup.itemId)) {
+//                        try {
+//                            fulfillOrder(colaCup.itemId);
+//                            colaCup.remove();
+//                        } catch (FoodNotOrderedException e) {
+//                            return;
+//                        }
+//                    }
+//                }
             }
         });
 
@@ -112,5 +136,7 @@ public class Customer extends ImageActor {
         if (waitTime > 5) {
             this.initialTip -= delta; // TODO: round it afterwards
         }
+
+        if ()
     }
 }

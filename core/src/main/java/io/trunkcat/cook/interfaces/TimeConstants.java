@@ -6,4 +6,6 @@ public interface TimeConstants {
 
     int TIME_BEFORE_OVERCOOKING = 10;
     int TIME_BEFORE_RUINED = 5;
+
+    int TIME_FOR_COLA_REFILL = 10;
 }

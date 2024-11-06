@@ -39,7 +39,7 @@ public abstract class FoodCooker extends ImageActor {
 
                 if (payload.getDragActor() instanceof CookableFoodItem) {
                     CookableFoodItem foodItem = (CookableFoodItem) payload.getDragActor();
-                    if (isCookableItem(foodItem)) {
+                    if (isCookableItem(foodItem.itemId)) {
                         foodItem.setScale(1.2f);
                         return true;
                     }
@@ -62,7 +62,7 @@ public abstract class FoodCooker extends ImageActor {
 
                 if (payload.getDragActor() instanceof CookableFoodItem) {
                     CookableFoodItem foodItem = (CookableFoodItem) payload.getDragActor();
-                    if (isCookableItem(foodItem)) {
+                    if (isCookableItem(foodItem.itemId)) {
                         foodItem.setScale(1.f);
                     }
                 } else if (payload.getDragActor() instanceof FoodHolder) {
@@ -81,8 +81,8 @@ public abstract class FoodCooker extends ImageActor {
 
                 if (payload.getDragActor() instanceof CookableFoodItem) {
                     CookableFoodItem foodItem = (CookableFoodItem) payload.getDragActor();
-                    if (isCookableItem(foodItem)) {
-                        putItemToCook(foodItem);
+                    if (isCookableItem(foodItem.itemId)) {
+                        putItemToCook(foodItem.itemId);
                         foodItem.remove();
                     }
                 } else if (payload.getDragActor() instanceof FoodHolder) {
@@ -103,9 +103,9 @@ public abstract class FoodCooker extends ImageActor {
         });
     }
 
-    public void putItemToCook(FoodItem item) {
+    public void putItemToCook(ItemID item) {
         try {
-            currentItem = getAfterCookedItem(item.itemId);
+            currentItem = getAfterCookedItem(item);
 
             // Only allow dragging if the cooking is finished.
             currentItem.dragSource = new DragAndDrop.Source(currentItem) {
@@ -146,23 +146,26 @@ public abstract class FoodCooker extends ImageActor {
                     }
 
                     currentItem.isCookingPaused = true;
-                    updateTexture(Textures.FryingPan.Flameless);
 
-                    FoodItem item = (FoodItem) payload.getDragActor();
                     FoodHolder holder = (FoodHolder) target.getActor();
-                    holder.currentItem = item;
 
-                    dragAndDrop.removeSource(currentItem.dragSource);
+                    if (currentItem.itemId == ItemID.PATTY && currentItem.status.ordinal() >= CookStatus.Cooked.ordinal() &&
+                        holder.currentItem == ItemID.BUN) {
+                        holder.holdItem(currentItem);
+                        currentItem.remove();
+                    }
+
+                    emptyCooker();
                 }
             };
             dragAndDrop.addSource(currentItem.dragSource);
 
             currentItem.status = CookStatus.Cooking;
             preparationTime = getPreparationTime(currentItem.itemId);
-            currentItem.setPosition(this.getX(), this.getY());
-            currentItem.setZIndex(this.getZIndex() + 1);
-            currentItem.setSize(200, 200);
             currentItem.setOrigin(Align.center);
+            currentItem.setPosition(this.getX() + (this.getWidth() / 2) - 20, this.getY() + (this.getHeight() / 2) + 20);
+            currentItem.setZIndex(this.getZIndex() + 1);
+            currentItem.setSize(100, 75);
             currentItem.isCookingPaused = false;
             stage.addActor(currentItem);
 
@@ -184,7 +187,7 @@ public abstract class FoodCooker extends ImageActor {
 
     abstract Texture getDefaultTexture();
 
-    public abstract boolean isCookableItem(FoodItem item);
+    public abstract boolean isCookableItem(ItemID item);
 
     @Override
     public void act(float delta) {

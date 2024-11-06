@@ -136,7 +136,5 @@ public class Customer extends ImageActor {
         if (waitTime > 5) {
             this.initialTip -= delta; // TODO: round it afterwards
         }
-
-        if ()
     }
 }

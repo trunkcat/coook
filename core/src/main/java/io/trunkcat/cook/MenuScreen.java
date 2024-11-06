@@ -2,6 +2,7 @@ package io.trunkcat.cook;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -12,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class MenuScreen implements Screen {
-
     final CookGame game;
     final private Stage stage;
 
@@ -26,7 +26,7 @@ public class MenuScreen implements Screen {
         // Prepare your screen here.
         Table table = new Table();
         table.setFillParent(true);
-        table.setDebug(true);
+        table.setDebug(false);
         stage.addActor(table);
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();

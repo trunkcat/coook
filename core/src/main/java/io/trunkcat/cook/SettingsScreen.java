@@ -21,13 +21,14 @@ public class SettingsScreen implements Screen {
         this.game = game;
         stage = new Stage(game.viewport);
         Gdx.input.setInputProcessor(stage);
+
     }
     @Override
     public void show() {
         // Prepare your screen here.
         Table table = new Table();
         table.setFillParent(true);
-        table.setDebug(true);
+        table.setDebug(false);
         stage.addActor(table);
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
@@ -51,7 +52,8 @@ public class SettingsScreen implements Screen {
         plusButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
+                float vol = game.bgMusic.getVolume();
+                game.bgMusic.setVolume(++vol);
             }
         });
 
@@ -61,7 +63,8 @@ public class SettingsScreen implements Screen {
         minusButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
+                float vol = game.bgMusic.getVolume();
+                game.bgMusic.setVolume(--vol);
             }
         });
 

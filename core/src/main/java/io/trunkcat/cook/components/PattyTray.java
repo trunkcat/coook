@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
+import com.badlogic.gdx.utils.Align;
 
 import io.trunkcat.cook.enums.ItemID;
 import io.trunkcat.cook.interfaces.Textures;
@@ -22,7 +23,8 @@ public class PattyTray extends FoodCollection {
     @Override
     Actor generateActor() {
         Patty patty = new Patty(dragAndDrop);
-        patty.setScale(3);
+        patty.setSize(200, 200);
+        patty.setOrigin(Align.center);
         return patty;
     }
 }

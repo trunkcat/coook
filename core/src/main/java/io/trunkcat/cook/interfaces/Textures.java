@@ -2,6 +2,8 @@ package io.trunkcat.cook.interfaces;
 
 import com.badlogic.gdx.graphics.Texture;
 
+import org.w3c.dom.Text;
+
 import io.trunkcat.cook.TextureManager;
 
 public interface Textures {
@@ -62,6 +64,12 @@ public interface Textures {
             Flameless = TextureManager.loadAsset("foodmakers/frying_pan.png"),
             Flame1 = TextureManager.loadAsset("foodmakers/frying_pan_2.png"),
             Flame2 = TextureManager.loadAsset("foodmakers/frying_pan_3.png");
+    }
+
+    interface OrderBoxes {
+        Texture
+            BurgerOrder = TextureManager.loadAsset("fooditems/burgerOrder.png"),
+            ColaOrder = TextureManager.loadAsset("fooditems/cupOrder.png");
     }
 
 }

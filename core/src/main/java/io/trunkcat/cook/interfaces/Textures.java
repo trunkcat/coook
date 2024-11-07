@@ -73,6 +73,6 @@ public interface Textures {
     }
 
     Texture
-        PlateStack = TextureManager.loadAsset("foodholders/plate_stack.png");   
+        PlateStack = TextureManager.loadAsset("foodholders/plate_stack.png");
 
 }

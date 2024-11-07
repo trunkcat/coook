@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 public class SettingsScreen implements Screen {
 
     final CookGame game;
+    boolean MusicOn = true;
     final private Stage stage;
 
     public SettingsScreen(final CookGame game) {
@@ -46,33 +47,34 @@ public class SettingsScreen implements Screen {
             }
         });
 
-        TextButton plusButton = new TextButton("+", buttonStyle);
-        plusButton.getLabel().setFontScale(5);
-        plusButton.setPosition(100, 400);
-        plusButton.addListener(new ChangeListener() {
+
+        TextButton MusicOnButton = new TextButton("Music On", buttonStyle);
+
+        MusicOnButton.getLabel().setFontScale(5);
+        MusicOnButton.setPosition(100, 400);
+        MusicOnButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                float vol = game.bgMusic.getVolume();
-                game.bgMusic.setVolume(++vol);
+                game.bgMusic.setVolume(1f);
             }
         });
 
-        TextButton minusButton = new TextButton("-", buttonStyle);
-        minusButton.getLabel().setFontScale(5);
-        minusButton.setPosition(100, 400);
-        minusButton.addListener(new ChangeListener() {
+        TextButton MusicOffButton = new TextButton("Music Off", buttonStyle);
+
+        MusicOffButton.getLabel().setFontScale(5);
+        MusicOffButton.setPosition(100, 400);
+        MusicOffButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                float vol = game.bgMusic.getVolume();
-                game.bgMusic.setVolume(--vol);
+                game.bgMusic.setVolume(0f);
             }
         });
 
         table.add(backButton).padBottom(100);
         table.row();
-        table.add(plusButton).padTop(100).padRight(20);
+        table.add(MusicOnButton).padTop(100).padRight(20);
         table.row();
-        table.add(minusButton).padTop(100).padLeft(20);
+        table.add(MusicOffButton).padTop(100).padRight(20);
         table.row();
     }
 

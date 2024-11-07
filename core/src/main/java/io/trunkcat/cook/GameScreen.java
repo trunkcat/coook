@@ -17,15 +17,11 @@ import com.badlogic.gdx.utils.Align;
 
 import java.util.Random;
 
-import io.trunkcat.cook.actors.customers.Ramesh;
-import io.trunkcat.cook.actors.customers.Sunita;
 import io.trunkcat.cook.components.BunTray;
-import io.trunkcat.cook.components.Customer;
 import io.trunkcat.cook.components.Dispenser;
 import io.trunkcat.cook.components.FryingPan;
 import io.trunkcat.cook.components.PattyTray;
-import io.trunkcat.cook.components.Plate;
-import io.trunkcat.cook.enums.ItemID;
+import io.trunkcat.cook.components.PlateStack;
 import io.trunkcat.cook.interfaces.Textures;
 
 /**
@@ -37,6 +33,7 @@ public class GameScreen implements Screen {
     private Stage stage;
     private DragAndDrop dragAndDrop;
     private final Random rand;
+    private final CustomerManager customerManager;
 
     public GameScreen(final CookGame game) {
         this.game = game;
@@ -53,83 +50,69 @@ public class GameScreen implements Screen {
         backgroundImage.addAction(Actions.alpha(0.75f)); // A little darkness might add some effect.
         stage.addActor(backgroundImage);
 
-        Customer customer1 = new Sunita(stage, dragAndDrop, new ItemID[]{ItemID.BUN_PATTY}, rand);
-        customer1.setSize(300, 450);
-        customer1.setPosition(300, 500);
-        stage.addActor(customer1);
-
-        Customer customer2 = new Ramesh(stage, dragAndDrop, new ItemID[]{ItemID.BUN_PATTY, ItemID.COLA_CUP}, rand);
-        customer2.setSize(300, 450);
-        customer2.setPosition(900, 500);
-        stage.addActor(customer2);
+        try {
+            this.customerManager = new CustomerManager(new float[][]{{300, 600}, {900, 600}, {1500, 600}}, stage, dragAndDrop, rand);
+            stage.addActor(this.customerManager);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         Image shelf = new Image(Textures.CounterTop);
         shelf.setSize(2000, 520);
+        shelf.setZIndex(1);
         stage.addActor(shelf);
 
         Image blackTint = new Image(Textures.CounterTop);
         blackTint.addAction(Actions.color(Color.BLACK));
         blackTint.addAction(Actions.alpha(0.5f));
         blackTint.setSize(2000, 520);
+        blackTint.setZIndex(1);
         stage.addActor(blackTint);
 
         PattyTray pattyTray = new PattyTray(5, stage, dragAndDrop);
         pattyTray.setPosition(0, 0);
         pattyTray.setSize(400, 400);
+        pattyTray.setZIndex(2);
         stage.addActor(pattyTray);
 
         BunTray bunTray = new BunTray(5, stage, dragAndDrop);
         bunTray.setPosition(400, 20);
-        bunTray.setSize(400, 400);
+        bunTray.setSize(300, 400);
+        bunTray.setZIndex(3);
         stage.addActor(bunTray);
+
+        PlateStack plateStack = new PlateStack(dragAndDrop, stage);
+        plateStack.setPosition(800, 20);
+        plateStack.setSize(300, 300);
+        stage.addActor(plateStack);
 
         /* Table top */
         Image counterTop = new Image(Textures.CounterTop);
         counterTop.setSize(2000, 400);
         counterTop.setY(150);
+        counterTop.setZIndex(4);
         stage.addActor(counterTop);
 
         FryingPan pan1 = new FryingPan(stage, dragAndDrop);
         pan1.setSize(250, 250);
         pan1.setPosition(1300, 300);
         pan1.setOrigin(Align.center);
+        pan1.setZIndex(5);
         stage.addActor(pan1);
 
         FryingPan pan2 = new FryingPan(stage, dragAndDrop);
         pan2.setSize(250, 250);
         pan2.setPosition(1500, 300);
         pan2.setOrigin(Align.center);
+        pan2.setZIndex(6);
         stage.addActor(pan2);
 
         Dispenser dispenser = new Dispenser(stage, dragAndDrop);
-        dispenser.setSize(300, 300);
-        dispenser.setPosition(100, 400);
+        dispenser.setSize(300, 350);
+        dispenser.setPosition(100, 260);
         dispenser.setOrigin(Align.center);
+        dispenser.setZIndex(7);
         stage.addActor(dispenser);
-
-        Plate plate1 = new Plate(stage, dragAndDrop);
-        plate1.setSize(250, 150);
-        plate1.setOrigin(Align.center);
-        plate1.setPosition(750, 400);
-        stage.addActor(plate1);
-
-        Plate plate2 = new Plate(stage, dragAndDrop);
-        plate2.setSize(250, 150);
-        plate2.setOrigin(Align.center);
-        plate2.setPosition(750, 200);
-        stage.addActor(plate2);
-
-        Plate plate3 = new Plate(stage, dragAndDrop);
-        plate3.setSize(250, 150);
-        plate3.setOrigin(Align.center);
-        plate3.setPosition(450, 400);
-        stage.addActor(plate3);
-
-        Plate plate4 = new Plate(stage, dragAndDrop);
-        plate4.setSize(250, 150);
-        plate4.setOrigin(Align.center);
-        plate4.setPosition(450, 200);
-        stage.addActor(plate4);
 
         stage.act();
     }
@@ -152,7 +135,6 @@ public class GameScreen implements Screen {
         TextButton PauseButton = new TextButton("Quit", buttonStyle);
         PauseButton.setPosition(1800, 940);
         PauseButton.getLabel().setFontScale(6, 6);
-
 
         PauseButton.addListener(new ChangeListener() {
             @Override

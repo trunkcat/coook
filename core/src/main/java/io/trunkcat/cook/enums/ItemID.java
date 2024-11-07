@@ -25,6 +25,8 @@ public enum ItemID {
 
     /* Other actors */
     CUSTOMER,
+    ORDER_BOX,
+    PLATE_TRAY,
 
     MINION,
 }

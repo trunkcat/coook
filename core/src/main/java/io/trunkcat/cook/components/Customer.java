@@ -5,15 +5,16 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import io.trunkcat.cook.CustomerManager;
 import io.trunkcat.cook.FoodInfo;
 import io.trunkcat.cook.enums.CustomerEmotion;
 import io.trunkcat.cook.enums.ItemID;
 import io.trunkcat.cook.exceptions.FoodNotOrderedException;
 import io.trunkcat.cook.interfaces.OtherConstants;
+import io.trunkcat.cook.interfaces.Textures;
 import io.trunkcat.cook.interfaces.TimeConstants;
 
 public abstract class Customer extends ImageActor {
@@ -23,21 +24,30 @@ public abstract class Customer extends ImageActor {
     public float initialTip;
     public int bill;
 
+    public OrderBox orderBox;
+
+    private final CustomerManager customerManager;
+
     public float initialWaitTime;
 
     public float waitTime; // TODO: progress bar.
+    private final int position;
 
-    public Customer(ItemID itemID, Texture itemTexture, final Stage stage, final DragAndDrop dragAndDrop, final ItemID[] orders, Random rand) {
+    public Customer(final CustomerManager customerManager, int position, ItemID itemID, Texture itemTexture, final Stage stage, final DragAndDrop dragAndDrop, final List<ItemID> orders, Random rand) {
         super(itemID, itemTexture);
 
-        this.ordersLeft = new ArrayList<>(Arrays.asList(orders));
+        this.position = position;
+        this.customerManager = customerManager;
+
+        this.ordersLeft = orders;
+
         this.ordersFulfilled = new ArrayList<>();
-        this.initialWaitTime = orders.length * TimeConstants.WAIT_UNIT_PER_ORDER * TimeConstants.SECOND_IN_SECONDS;
+        this.initialWaitTime = orders.size() * TimeConstants.WAIT_UNIT_PER_ORDER * TimeConstants.SECOND_IN_SECONDS;
         this.waitTime = initialWaitTime;
         this.emotion = CustomerEmotion.Happy;
         this.initialTip = rand.nextInt(OtherConstants.MAXIMUM_TIP - OtherConstants.MINIMUM_TIP + 1) + OtherConstants.MINIMUM_TIP;
 
-        this.setZIndex(1); // to be at the lowest level cuz they don't matter.
+        this.setZIndex(0); // to be at the lowest level cuz they don't matter.
 
         dragAndDrop.addTarget(new DragAndDrop.Target(this) {
             @Override
@@ -61,7 +71,7 @@ public abstract class Customer extends ImageActor {
                         return true;
                     }
                 }
-                
+
                 return false;
             }
 
@@ -105,6 +115,24 @@ public abstract class Customer extends ImageActor {
 
     }
 
+    public Texture getOrderBoxTexture() {
+        if (this.ordersLeft.isEmpty()) return null;
+
+        ItemID firstOrder = this.ordersLeft.get(0);
+
+        if (firstOrder == ItemID.BUN_PATTY) {
+            if (this.ordersLeft.size() < 2) {
+                return Textures.OrderBoxes.BurgerOrder;
+            } else if (this.ordersLeft.get(1) == ItemID.COLA_CUP) {
+                return Textures.OrderBoxes.BurgerColaOrder;
+            }
+        } else if (firstOrder == ItemID.COLA_CUP) {
+            return Textures.OrderBoxes.ColaOrder;
+        }
+
+        return null;
+    }
+
     public boolean hasOrderedItem(ItemID itemID) {
         return this.ordersLeft.contains(itemID);
     }
@@ -117,10 +145,11 @@ public abstract class Customer extends ImageActor {
         int foodValue = FoodInfo.getItemValue(itemID);
         this.bill += foodValue;
         this.ordersLeft.remove(itemID);
+        this.orderBox.updateTexture(getOrderBoxTexture());
         this.ordersFulfilled.add(itemID);
 
         if (ordersLeft.isEmpty()) {
-            this.remove();
+            customerManager.despawnCustomer(this, position);
         }
     }
 
@@ -150,7 +179,7 @@ public abstract class Customer extends ImageActor {
             emotion = CustomerEmotion.Impatient;
         } else {
             // When runs out of patience:
-            remove();
+            customerManager.despawnCustomer(this, position);
         }
     }
 

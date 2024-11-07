@@ -22,6 +22,7 @@ import io.trunkcat.cook.components.Dispenser;
 import io.trunkcat.cook.components.FryingPan;
 import io.trunkcat.cook.components.PattyTray;
 import io.trunkcat.cook.components.PlateStack;
+import io.trunkcat.cook.components.TrashCan;
 import io.trunkcat.cook.interfaces.Textures;
 
 /**
@@ -113,6 +114,11 @@ public class GameScreen implements Screen {
         dispenser.setOrigin(Align.center);
         dispenser.setZIndex(7);
         stage.addActor(dispenser);
+
+        TrashCan trashCan = new TrashCan(dragAndDrop);
+        trashCan.setSize(250, 300);
+        trashCan.setPosition(stage.getWidth() - trashCan.getWidth() - 50, -20);
+        stage.addActor(trashCan);
 
         stage.act();
     }

@@ -2,8 +2,6 @@ package io.trunkcat.cook.interfaces;
 
 import com.badlogic.gdx.graphics.Texture;
 
-import org.w3c.dom.Text;
-
 import io.trunkcat.cook.TextureManager;
 
 public interface Textures {
@@ -76,4 +74,9 @@ public interface Textures {
     Texture
         PlateStack = TextureManager.loadAsset("foodholders/plate_stack.png");
 
+    interface TrashCan {
+        Texture
+            Closed = TextureManager.loadAsset("environment/trash_closed.png"),
+            Opened = TextureManager.loadAsset("environment/trash_opened.png");
+    }
 }

@@ -72,4 +72,7 @@ public interface Textures {
             ColaOrder = TextureManager.loadAsset("fooditems/cupOrder.png");
     }
 
+    Texture
+        PlateStack = TextureManager.loadAsset("foodholders/plate_stack.png");   
+
 }

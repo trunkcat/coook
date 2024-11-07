@@ -145,7 +145,9 @@ public abstract class Customer extends ImageActor {
         int foodValue = FoodInfo.getItemValue(itemID);
         this.bill += foodValue;
         this.ordersLeft.remove(itemID);
-        this.orderBox.updateTexture(getOrderBoxTexture());
+        if (!this.ordersLeft.isEmpty()) {
+            this.orderBox.updateTexture(getOrderBoxTexture());
+        }
         this.ordersFulfilled.add(itemID);
 
         if (ordersLeft.isEmpty()) {

@@ -60,6 +60,7 @@ public interface Textures {
     interface FryingPan {
         Texture
             Flameless = TextureManager.loadAsset("foodmakers/frying_pan.png"),
+            Sheet = TextureManager.loadAsset("foodmakers/frying_pan_2-Sheet.png"),
             Flame1 = TextureManager.loadAsset("foodmakers/frying_pan_2.png"),
             Flame2 = TextureManager.loadAsset("foodmakers/frying_pan_3.png");
     }

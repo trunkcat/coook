@@ -1,6 +1,8 @@
 package io.trunkcat.cook.components;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 
@@ -12,12 +14,37 @@ public class FryingPan extends FoodCooker {
     static final Texture TEXTURE = Textures.FryingPan.Flameless;
     static final ItemID ITEM_ID = ItemID.FRYING_PAN;
 
+    Animation<TextureRegion> fireAnimation;
     private DragAndDrop dragAndDrop;
 
     public FryingPan(Stage stage, DragAndDrop dragAndDrop) {
         super(FryingPan.ITEM_ID, FryingPan.TEXTURE, stage, dragAndDrop);
 
+        TextureRegion[][] sheet = TextureRegion.split(Textures.FryingPan.Sheet, 25, 18);
+        TextureRegion[] frames = new TextureRegion[3];
+        int index = 0;
+        for (int i = 0; i < 3; i++) {
+            frames[index++] = sheet[0][i];
+        }
+        fireAnimation = new Animation<>(0.25f, frames);
+
         this.dragAndDrop = dragAndDrop;
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+
+        if (currentItem == null) {
+            Texture texture = getDefaultTexture();
+            if (currentTexture != texture) {
+                updateTexture(texture);
+            }
+            return;
+        }
+
+        TextureRegion texture = fireAnimation.getKeyFrame(timeElapsed, true);
+        updateTexture(texture);
     }
 
     @Override

@@ -9,13 +9,14 @@ import com.badlogic.gdx.utils.Align;
 import io.trunkcat.cook.enums.CookStatus;
 import io.trunkcat.cook.enums.ItemID;
 import io.trunkcat.cook.exceptions.UncookableItemException;
-import io.trunkcat.cook.interfaces.Textures;
 import io.trunkcat.cook.interfaces.TimeConstants;
 
 public abstract class FoodCooker extends ImageActor {
     public CookableFoodItem currentItem = null;
     private float preparationTime = 0f;
     private float overcookingTime = 0f;
+
+    public float timeElapsed;
 
     private final Stage stage;
     private final DragAndDrop dragAndDrop;
@@ -169,8 +170,6 @@ public abstract class FoodCooker extends ImageActor {
             currentItem.isCookingPaused = false;
             stage.addActor(currentItem);
 
-            updateTexture(Textures.FryingPan.Flame1);
-
             //TODO: calculate the update the texture to the cook state.
             // maybe add some smooth steam as well. and FIRE!
         } catch (UncookableItemException e) {
@@ -182,7 +181,6 @@ public abstract class FoodCooker extends ImageActor {
 
     public void emptyCooker() {
         currentItem = null;
-        updateTexture(getDefaultTexture());
     }
 
     abstract Texture getDefaultTexture();
@@ -192,6 +190,8 @@ public abstract class FoodCooker extends ImageActor {
     @Override
     public void act(float delta) {
         super.act(delta);
+
+        timeElapsed += delta;
 
         if (currentItem != null) {
             Texture statusTexture = currentItem.getStatusTexture();

@@ -52,7 +52,7 @@ public class GameScreen implements Screen {
         stage.addActor(backgroundImage);
 
         try {
-            this.customerManager = new CustomerManager(new float[][]{{300, 600}, {900, 600}, {1500, 600}}, stage, dragAndDrop, rand);
+            this.customerManager = new CustomerManager(new float[][]{{500, 550}, {900, 550}, {1300, 550}}, stage, dragAndDrop, rand);
             stage.addActor(this.customerManager);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -70,13 +70,13 @@ public class GameScreen implements Screen {
         blackTint.setZIndex(1);
         stage.addActor(blackTint);
 
-        PattyTray pattyTray = new PattyTray(5, stage, dragAndDrop);
+        PattyTray pattyTray = new PattyTray(500, stage, dragAndDrop);
         pattyTray.setPosition(0, 0);
         pattyTray.setSize(400, 400);
         pattyTray.setZIndex(2);
         stage.addActor(pattyTray);
 
-        BunTray bunTray = new BunTray(5, stage, dragAndDrop);
+        BunTray bunTray = new BunTray(500, stage, dragAndDrop);
         bunTray.setPosition(400, 20);
         bunTray.setSize(300, 400);
         bunTray.setZIndex(3);

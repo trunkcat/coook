@@ -69,7 +69,8 @@ public interface Textures {
     interface OrderBoxes {
         Texture
             BurgerOrder = TextureManager.loadAsset("fooditems/burgerOrder.png"),
-            ColaOrder = TextureManager.loadAsset("fooditems/cupOrder.png");
+            ColaOrder = TextureManager.loadAsset("fooditems/cupOrder.png"),
+            BurgerColaOrder = TextureManager.loadAsset("fooditems/burgerCupOrder.png");
     }
 
     Texture
